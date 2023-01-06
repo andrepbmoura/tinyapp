@@ -27,16 +27,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const id = req.params.id;
-  const templateVars = { id: req.params.id, longURL: req.params.id.longURL }; 
-  const urlPair = Object.entries(urlDatabase).find(([key, value]) => key === id);
-
-  if (urlPair) {
-    const [key, longURL] = urlPair;
-    console.log(longURL);  // output the longURL associated with the id
-  } else {
-    console.log("URL not found");  // id not found in the urlDatabase
-  } 
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] }; 
   res.render("urls_show", templateVars);
 });
 
