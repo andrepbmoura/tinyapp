@@ -6,9 +6,8 @@ app.set("view engine", "ejs");
 
 app.use(express.urlencoded({ extended: true }));
 
-function generateRandomString() {
-  return Math.random().toString(36).slice(2).substring(0, 6);
-}
+const generateRandomString = () => Math.random().toString(36).slice(2).substring(0, 6);
+
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -33,22 +32,41 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  const id = randomGenString();
+  console.log(id)
+  console.log(urlDatabase)
+  urlDatabase[id] = req.body.longURL;
+  console.log(urlDatabase)
+  res.redirect(`/urls/${id}`);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { urls: urlDatabase };
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] }; 
+  const id = req.params.id;
+  const templateVars = { id, longURL: urlDatabase[id] };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
+});
+
+app.post("/urls/:id/rewrite", (req, res) => {
+  const id = req.params.id;
+  const newURL = req.body.newID;
+  urlDatabase[id] = newURL;
+  res.redirect(`/urls/${id}`);
+});
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  const templateVars = { urls: urlDatabase };
+  res.render("urls_index", templateVars);
 });
 
 app.listen(PORT, () => {
