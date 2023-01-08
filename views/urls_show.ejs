@@ -17,12 +17,17 @@
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
-        <h5 class="card-title">TinyURL for: <a href="<%= longURL %>"><%= longURL %></a></h5>
+        <h5 class="card-title">TinyURL for: <%= longURL %></h5>
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
       </div>
       <div class="card-footer text-muted"></div>  
+      <h3>Edit</h3>
+        <form method = "POST" action="/urls/<%= id %>/rewrite">
+          <input type = "text" name = "newID" placeholder = "Enter a new URL">
+          <button type = "submit">Submit</button>
+        </form>
     </div>
     <!-- Bootstrap JS -->
     <script
