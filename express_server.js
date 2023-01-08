@@ -1,9 +1,10 @@
 const express = require("express");
 const app = express();
+const cookieParser = require('cookie-parser');
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
-
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 const generateRandomString = () => Math.random().toString(36).slice(2).substring(0, 6);
@@ -66,6 +67,13 @@ app.post("/urls/:id/rewrite", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   const templateVars = { urls: urlDatabase };
+  res.render("urls_index", templateVars);
+});
+
+app.get("/login", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+  }
   res.render("urls_index", templateVars);
 });
 
