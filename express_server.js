@@ -27,6 +27,11 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+app.post('/login', (req, res) => {
+  res.cookie('username', req.body.username);
+  res.redirect('/urls');
+});
+
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
@@ -70,12 +75,15 @@ app.post("/urls/:id/delete", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.get("/login", (req, res) => {
-  const templateVars = {
-    username: req.cookies["username"],
-  }
-  res.render("urls_index", templateVars);
+app.post('/login', (req, res) => {
+  res.cookie('username', req.body.username);
+  res.redirect('/urls');
 });
+
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
