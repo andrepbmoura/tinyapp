@@ -2,18 +2,23 @@ const express = require("express");
 const app = express();
 const cookieParser = require('cookie-parser');
 const PORT = 8080; // default port 8080
-
 app.set("view engine", "ejs");
+
+//Middleware
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
+//Random string generator
 const generateRandomString = () => Math.random().toString(36).slice(2).substring(0, 6);
 
-
+//Database
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+
+//Routes
 
 app.get("/", (req, res) => {
   res.send("Hello!");
