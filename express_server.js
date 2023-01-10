@@ -4,15 +4,12 @@ const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const PORT = 8080; // default port 8080
 app.set("view engine", "ejs"); //Set EJS as the default view engine
+const { randomGenString, cookieHasUser } = require('./helpers');
 
 //Middleware
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-
-
-//Random string generator
-const randomGenString = () => Math.random().toString(36).slice(2).substring(0, 6);
 
 //Database
 const urlDatabase = {
@@ -20,6 +17,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const usersDatabase = {};
 
 //Routes
 
@@ -33,18 +31,6 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
-//Handles Login request
-app.post('/login', (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect('/urls');
-});
-
-//Handles Logout request
-app.post('/logout', (req, res) => {
-  res.clearCookie('username');
-  res.redirect('/urls');
 });
 
 //Reads all the URLS
@@ -86,6 +72,26 @@ app.post("/urls/:id/rewrite", (req, res) => {
   res.redirect(`/urls/${id}`);
 });
 
+app.get('/register' , (req, res) => {
+  let templateVars = {
+    'urls' : urlDatabase,
+    username: usersDatabase
+   };
+  res.render('urls_registration', templateVars);
+});
+
+//Handles Login request
+app.get('/login', (req, res) => {
+  res.cookie('username', req.body.username);
+  res.redirect('/urls');
+});
+
+//Handles Logout request
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
+});
+
 //Delete
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
@@ -93,6 +99,7 @@ app.post("/urls/:id/delete", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+//Listener
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
