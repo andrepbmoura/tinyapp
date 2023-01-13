@@ -19,5 +19,4 @@ const urlsUser = (id, urlDatabase) => {
   return database;
 };
 
-
 module.exports = { randomGenString, getUserByEmail, urlsUser };    
