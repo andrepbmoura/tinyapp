@@ -15,8 +15,14 @@ app.use(morgan("dev"));
 
 //Database
 const urlDatabase = {
-  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userId: "isdpse" },
-  "9sm5xK": { longURL: "http://www.google.com", userId: "isdpse" }
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userId: "isdpse"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userId: "isdpse"
+  }
 };
 
 const users = {
@@ -135,6 +141,9 @@ app.post("/urls", (req, res) => {
   const userId = req.cookies.userId;
   const newUrl = randomGenString();
 
+  if (!userId) {
+    return res.status(401).send(`Access denied! Please <a href=\"/login\">login</a> or <a href=\"/register\">register</a> to visualize URLS!</body></html>\n`);
+  }
   if (!urlDatabase[userId]) {
     urlDatabase[userId] = {};
   }
@@ -143,7 +152,7 @@ app.post("/urls", (req, res) => {
 });
 
 //Creates new form
-app.get('/urls/new', (req, res) => {  
+app.get('/urls/new', (req, res) => {
   const userId = req.cookies.userId;
   const user = users[userId];
   const templateVars = { user };
@@ -160,7 +169,7 @@ app.get('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
 
   const templateVars = {
-    user: users[userId], 
+    user: users[userId],
     id: shortURL,
     longURL: urlDatabase[shortURL].longURL
   };
@@ -169,18 +178,37 @@ app.get('/urls/:id', (req, res) => {
 });
 
 
-app.post("/urls/:id/", (req, res) => {
-  urlDatabase[req.params.id].longURL = req.body.longURL;
+app.post('/urls/:id', (req, res) => {
+  const shortURL = req.params.id;
+  //if URL doesn't exist in database return html error message (accessed via cURL command)
+  if (!urlDatabase[shortURL]) {
+    return res.status(404).send(`The URL ${shortURL} does not exist`);
+  }
+  //Get user connected to URL edit
+  const userID = req.session.userID;
+  //If no user logged in, display error message
+  if (!userID) {
+    return res.status(401).send('<html><body>Please <a href="/login">login</a> or <a href="/register">register</a> to continue</body></html>');
+  }
+  //If user does not own the URL, display error message
+  if (urlDatabase[shortURL].userID !== userID) {
+    return res.status(401).send('You are unauthorized to view this URL');
+  }
+  //Store updated longURL
+  const newURL = req.body.newURL;
+  //Add it to database
+  urlDatabase[shortURL] = { longURL: newURL, userID };
   res.redirect('/urls');
 });
 
 app.get("/u/:id", (req, res) => {
-  const shortURL = req.params.id;
-  const url = urlDatabase[shortURL];
+  const id = req.params.id;
+  const url = urlDatabase[id];
   if (!url) {
     return res.status(404).send(`URL not found! Please try again: <a href=\"/urls\">Urls</a> `);
   }
-  res.redirect(url.longURL);
+  const longURL = urlDatabase[id].longURL;
+  res.redirect(longURL);
 });
 
 
