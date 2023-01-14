@@ -15,7 +15,7 @@ Security Features:
 
 !["Screenshot of URLs page"]()
 
-!["Screenshot of login page"](![screenshot 01](https://user-images.githubusercontent.com/63623777/212494010-954fa06f-4697-4f10-9205-a41d5a661470.jpeg))
+!["Screenshot of login page"](https://user-images.githubusercontent.com/63623777/212494010-954fa06f-4697-4f10-9205-a41d5a661470.jpeg)
 
 ## Dependencies
 
