@@ -18,7 +18,7 @@ app.use(morgan("dev"));
 app.use(cookieSession({
   name: 'session',
   keys: ['string'],
-  maxAge: 24 * 60 * 60 * 1000
+  maxAge: 24 * 60 * 60 * 1000 //24 hours
 }));
 
 
@@ -34,13 +34,8 @@ const urlDatabase = {
   },
 };
 
-const users = {
-  "aJ48lW": {
-    id: "aJ48lW",
-    email: "user@example.com",
-    password: "123",
-  }
-};
+const users = {};
+
 
 /////////////
 //ROUTES
@@ -78,6 +73,7 @@ app.post('/login', (req, res) => {
 //Handles Logout request
 app.post('/logout', (req, res) => {
   res.clearCookie("session")
+  res.clearCookie("session.sig")
   res.redirect('/login');
 });
 
