@@ -9,7 +9,10 @@ const { randomGenString, getUserByEmail, urlsUser } = require('./helpers');
 //Set EJS as the default view engine
 app.set("view engine", "ejs");
 
-//Middleware
+
+/////////////
+//MIDDLEWARE
+////////////
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(cookieSession({
@@ -17,6 +20,7 @@ app.use(cookieSession({
   keys: ['string'],
   maxAge: 24 * 60 * 60 * 1000
 }));
+
 
 //Database
 const urlDatabase = {
@@ -47,6 +51,7 @@ app.get('/login', (req, res) => {
   const templateVars = {
     user: users[req.session["userId"]],
   }
+  //Check if the user is already logged in and if not, redirect to the login page
   if (req.session.userId) {
     return res.redirect("/urls");
   }
@@ -115,13 +120,13 @@ app.post('/register', (req, res) => {
   res.redirect('/urls');
 });
 
-
+// If the user is already logged in or registered, redirect to the urls page
 app.get('/', (req, res) => {
   const loggedUser = req.session.userId;
   if (!loggedUser) {
     res.redirect('/login');
   }
-  res.redirect('/urls');  
+  res.redirect('/urls');
 });
 
 //Reads all the URLS
@@ -143,10 +148,12 @@ app.get("/urls", (req, res) => {
   }
 });
 
+//Creates a new URL if the user is logged in
 app.post("/urls", (req, res) => {
   const userId = req.session.userId;
   const newUrl = randomGenString();
 
+  //Throw an error if the user is not logged in
   if (!userId) {
     return res.status(401).send('You must <a href=\"/login\">login</a> to continue!');
   }
@@ -154,12 +161,14 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${newUrl}`);
 });
 
+
 //Creates new form
 app.get('/urls/new', (req, res) => {
   const userId = req.session.userId;
   const user = users[userId];
   const templateVars = { user };
 
+  // if user is logged in, than render the urls_new template, else redirect to the login page
   if (userId) {
     res.render("urls_new", templateVars);
   } else {
@@ -171,9 +180,11 @@ app.get('/urls/:id', (req, res) => {
   const userId = req.session.userId;
   const shortURL = req.params.id;
 
+  //if URL does not exist, thrown an error
   if (!urlDatabase[shortURL]) {
     return res.status(404).send(`The selected URL ${shortURL} does not exist in the database`);
   }
+  //if the user is not logged in or registered, throw an error
   if (!userId) {
     return res.status(401).send('<html><body>Please <a href="/login">login</a> or <a href="/register">register</a> to create or edit URLS!</body></html>');
   }
@@ -192,7 +203,7 @@ app.post("/urls/:id/", (req, res) => {
   const shortURL = req.params.id;
   const userId = req.session.userId;
 
-
+  //if the URL does not exist, thrown an error
   if (!urlDatabase[shortURL]) {
     return res.status(404).send(`The URL ${shortURL} does not exist in the database`);
   }
@@ -211,6 +222,8 @@ app.post("/urls/:id/", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
+  
+  //if URL does not exist, display error message
   if (!urlDatabase[shortURL]) {
     return res.status(404).send(`URL not found! Please try again: <a href=\"/urls\">Urls</a> `);
   }
@@ -223,6 +236,7 @@ app.post("/urls/:id/delete", (req, res) => {
   const user = req.session.userId;
   const shortURL = req.params.id;
 
+  //if user is not logged in, thrown an error
   if (!user) {
     return res.status(401).send("Please log in first!");
   }
@@ -230,7 +244,7 @@ app.post("/urls/:id/delete", (req, res) => {
   if (!urlDatabase[shortURL]) {
     return res.send("short URL does not exist in the database!");
   }
-
+  //if user does not own the URL, display an error message
   if (urlDatabase[shortURL].userId !== user) {
     return res.send("You cannot view this URL");
   }
