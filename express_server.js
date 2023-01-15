@@ -190,7 +190,7 @@ app.get('/urls/:id', (req, res) => {
     id: shortURL,
     longURL: urlDatabase[shortURL].longURL
   };
-
+  
   res.render('urls_show', templateVars);
 });
 
@@ -218,7 +218,7 @@ app.post("/urls/:id/", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
-  
+
   //if URL does not exist, display error message
   if (!urlDatabase[shortURL]) {
     return res.status(404).send(`URL not found! Please try again: <a href=\"/urls\">Urls</a> `);
