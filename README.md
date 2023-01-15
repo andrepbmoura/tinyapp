@@ -25,12 +25,12 @@ Security Features:
 - EJS
 - bcryptjs
 - cookie-session
+- morgan
 
 DEV Dependencies
 
 - chai
 - mocha
-- morgan
 - nodemon
 
 ## Getting Started
