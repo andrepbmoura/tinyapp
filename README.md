@@ -16,10 +16,6 @@ Security Features:
 !["Screenshot of URLs page"](https://user-images.githubusercontent.com/63623777/212494118-51c46c99-ef30-4106-bdf1-592acdcd6363.jpeg)
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> f839772 (Updated README file and uploaded the final product pictures for the Tiny App project)
 !["Screenshot of login page"](https://user-images.githubusercontent.com/63623777/212494010-954fa06f-4697-4f10-9205-a41d5a661470.jpeg)
 
 ## Dependencies
