@@ -24,8 +24,7 @@ Security Features:
 - Node.js
 - Express
 - EJS
-- bcrypt
-- body-parser
+- bcryptjs
 - cookie-session
 
 DEV Dependencies
