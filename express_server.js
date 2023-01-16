@@ -164,14 +164,14 @@ app.post("/urls", (req, res) => {
 app.get('/urls/new', (req, res) => {
   const loggedUser = req.session.user;
   const user = users[loggedUser];
-  const templateVars = { user };
-
   // if user is logged in, than render the urls_new template, else redirect to the login page
   if (!loggedUser) {
     res.redirect("/login");
   }
+  const templateVars = { user };
   res.render("urls_new", templateVars);
 });
+
 
 app.get('/urls/:id', (req, res) => {
   const loggedUser = req.session.user;
@@ -204,7 +204,7 @@ app.get('/urls/:id', (req, res) => {
 
 app.post("/urls/:id/", (req, res) => {
   const shortURL = req.params.id;
-  const user = req.session.user;
+  const loggedUser = req.session.user;
 
   //if the URL does not exist, thrown an error
   if (!urlDatabase[shortURL]) {
@@ -212,11 +212,11 @@ app.post("/urls/:id/", (req, res) => {
   }
 
   //If no user logged in, display error message
-  if (!user) {
+  if (!loggedUser) {
     return res.status(401).send('<html><body>Please <a href="/login">login</a> or <a href="/register">register</a> to continue!</body></html>');
   }
   //If user does not own the URL, display error message
-  if (urlDatabase[shortURL].userId !== user) {
+  if (urlDatabase[shortURL].userId !== loggedUser) {
     return res.status(401).send('You unauthorized to view this URL!');
   }
   urlDatabase[req.params.id].longURL = req.body.longURL;
@@ -236,11 +236,11 @@ app.get("/u/:id", (req, res) => {
 
 //Delete
 app.post("/urls/:id/delete", (req, res) => {
-  const user = req.session.user;
+  const loggedUser = req.session.user;
   const shortURL = req.params.id;
 
   //if user is not logged in, thrown an error
-  if (!user) {
+  if (!loggedUser) {
     return res.status(401).send('<html><body>Please <a href="/login">login</a> or <a href="/register">register</a> to continue!</body></html>');
   }
   // if requested short url is not in the shortURLs array
@@ -248,7 +248,7 @@ app.post("/urls/:id/delete", (req, res) => {
     return res.status(404).send("short URL does not exist in the database!");
   }
   //if user does not own the URL, display an error message
-  if (urlDatabase[shortURL].userId !== user) {
+  if (urlDatabase[shortURL].userId !== loggedUser) {
     return res.status(401).send('You unauthorized to view this URL!');
   }
   const shortURLId = req.params.id;
